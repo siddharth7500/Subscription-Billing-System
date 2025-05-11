@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SBS - Registration</title>
+    <style>
+        button:disabled {
+            background-color: #e0e0e0;
+            color: #888888;       
+            cursor: not-allowed;
+            border: 1px solid #dcdcdc;
+        }
+
+        button:not(:disabled) {
+            background-color: #26c2a4;
+            color: white;
+            cursor: pointer;
+            border: 1px solid #26c2a4;
+        }
+
+        .password-checklist-box {
+            padding: 20px 25px;
+            background: #fafafb;
+            -webkit-border-radius: 2px;
+            -moz-border-radius: 2px;
+            border-radius: 2px;
+            border: 1px solid #e5e6ec;
+            font-size: 14px;
+            margin-top: 25px;
+            color: rgba(29, 36, 79, 0.71);
+        }
+
+        .password-checklist-box .checklist-item {
+            margin-bottom: 10px;
+        }
+
+        .password-checklist-box .checklist-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .password-checklist-box .checklist-item .checklist-icon {
+            border: 1px solid #ddd;
+            border-radius: 50%;
+            width: 15px;
+            height: 15px;
+            display: inline-block;
+            position: relative;
+            top: 3px;
+            margin-right: 10px;
+        }
+
+        .password-checklist-box .checklist-item span {
+            transition: all .2s;
+        }
+
+        .password-checklist-box .checklist-item.passed span {
+            color: #2dad95;
+        }
+
+        .password-checklist-box .checklist-item.passed .checklist-icon {
+            background: #26c2a4;
+            border-color: #26c2a4;
+        }
+
+        .password-checklist-box .checklist-item.error span {
+            color: #e34c40;
+        }
+
+        .password-checklist-box .checklist-item.error .checklist-icon {
+            border-color: #e34c40;
+        }
+
+        .password-checklist-box .checklist-item.passed .checklist-icon:after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 3px;
+            width: 7px;
+            height: 12px;
+            border: 2px solid #ffffff;
+            background: transparent;
+            -webkit-transform: rotateZ(43deg);
+            -ms-transform: rotate(43deg);
+            transform: rotateZ(43deg);
+            border-top: 0;
+            border-left: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f3f3f3;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .register-container {
+            background: white;
+            padding: 30px 40px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 350px;
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #333;
+        }
+        input[type="text"],
+        input[type="email"],
+        input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            font-weight: bold;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .link {
+            text-align: center;
+            margin-top: 15px;
+        }
+        .link a {
+            text-decoration: none;
+            color: #007bff;
+        }
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <h2>Subscription Billing System</h2>
+        <form method="post">
+            {% csrf_token %}
+    
+            <div class="form-group">
+                <label for="{{ form.username.id_for_label }}">{{ form.username.label }}</label>
+                {{ form.username }}
+            </div>
+        
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" name="email" id="email" required>
+            </div>
+    
+            <div id="pass" class="form-group custom-input" data-name="password" style="margin-bottom: 2rem;">
+                <label id="pass" class="main-label" for="signUpForm3PasswordLabel">Password</label>
+                <input type="password" class="form-control helper-input" data-helper-offset="40" name="password" id="signUpForm3Password" autocomplete="new-password" maxlength="32">
+                <label class="helper helper-right interactive">
+                    <a href="#" class="toggle-password-visibility">
+                        <span class="visibility-on">
+                        </span>
+                        <span class="visibility-off">
+                        </span>
+                    </a>
+                </label>
+                <div class="password-checklist-box" id="signUpForm3PasswordChecklistBox">
+                    <div class="checklist-item length"><span class="checklist-icon"></span><span>At least 8 characters long</span></div>
+                    <div class="checklist-item lowercase"><span class="checklist-icon"></span><span>One lowercase character</span></div>
+                    <div class="checklist-item uppercase"><span class="checklist-icon"></span><span>One uppercase character</span></div>
+                    <div class="checklist-item special"><span class="checklist-icon"></span><span>One number or symbol</span></div>
+                    <div class="checklist-item max"><span class="checklist-icon"></span><span>32 characters long</span></div>
+                </div>
+            </div>
+    
+            <button type="submit" id="registerBtn" disabled>Register</button>
+        </form>
+    
+        <div class="link">
+            Already have an account? <a href="{% url 'login' %}">Login</a>
+        </div>
+    </div>
+</body>
+</html>
+<script>
+    if (window.history.replaceState) {
+        window.history.replaceState(null, null, window.location.href);
+    }
+    document.addEventListener('DOMContentLoaded', function () {
+        const passwordField = document.getElementById('signUpForm3Password');
+        const registerButton = document.getElementById('registerBtn');
+        const checklistItems = document.querySelectorAll('.password-checklist-box .checklist-item');
+
+        // Function to check password validity
+        function checkPassword() {
+            const password = passwordField.value;
+            let isValid = true;
+
+            // Check each requirement
+            checklistItems.forEach(item => {
+                const text = item.textContent.trim();
+                item.classList.remove('passed', 'error'); // Remove previous status
+
+                // Validate password against checklist items
+                if (text.includes('8 characters long') && password.length >= 8) {
+                    item.classList.add('passed');
+                } else if (text.includes('lowercase character') && /[a-z]/.test(password)) {
+                    item.classList.add('passed');
+                } else if (text.includes('uppercase character') && /[A-Z]/.test(password)) {
+                    item.classList.add('passed');
+                } else if (text.includes('number or symbol') && /[0-9!@#$%^&*(),.?":{}|<>]/.test(password)) {
+                    item.classList.add('passed');
+                } else if (text.includes('32 characters long') && password.length <= 32) {
+                    item.classList.add('passed');
+                } else {
+                    item.classList.add('error');
+                    isValid = false;
+                }
+            });
+
+            if (isValid) {
+                registerButton.removeAttribute('disabled');
+            } else {
+                registerButton.setAttribute('disabled', 'true');
+            }
+        }
+
+        // Run check on password input
+        passwordField.addEventListener('input', checkPassword);
+    });
+</script>
